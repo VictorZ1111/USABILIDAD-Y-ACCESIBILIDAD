@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soporte y Contacto - Diagnóstico IA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">🤖 Diagnóstico IA</div>
+    <nav class="nav-buttons">
+      <button onclick="location.href='dashboard.html'">Volver</button>
+    </nav>
+  </header>
+
+  <button id="menu-btn">☰</button>
+  <aside id="sidebar">
+    <h2>Accesibilidad</h2>
+    <button onclick="toggleDarkMode()">🌙 Modo oscuro</button>
+    <button onclick="increaseText()">Aumentar texto</button>
+    <button onclick="decreaseText()">Disminuir texto</button>
+    <button onclick="textToSpeech()">🗣️ Lectura de texto</button>
+    <button onclick="stopSpeech()">🔇 Detener lectura</button>
+  </aside>
+
+  <main class="soporte">
+    <h1>Centro de Soporte y Contacto</h1>
+    <section>
+      <h2>Preguntas Frecuentes</h2>
+      <p><strong>¿Cómo funciona el diagnóstico?</strong> — El sistema analiza tus síntomas y genera sugerencias según coincidencias con patrones comunes.</p>
+      <p><strong>¿El diagnóstico es médico?</strong> — No. Es orientativo. Siempre debes confirmar con un profesional de salud.</p>
+    </section>
+
+    <section id="contacto">
+      <h2>Contáctanos</h2>
+      <form id="contactForm">
+        <label for="nombre">Nombre:</label>
+        <input id="nombre" required>
+        <label for="correo">Correo electrónico:</label>
+        <input id="correo" type="email" required>
+        <label for="mensaje">Mensaje:</label>
+        <textarea id="mensaje" rows="4" required></textarea>
+        <button type="submit">Enviar</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Diagnóstico IA | Centro de soporte y contacto</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

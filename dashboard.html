@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Principal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">🤖 Diagnóstico IA</div>
+    <div class="user-info">
+      <span id="welcomeUser">Bienvenido, Usuario</span>
+      <button onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <!-- Botón del menú lateral -->
+  <button id="menu-btn">☰</button>
+  <aside id="sidebar">
+    <h2>Accesibilidad</h2>
+    <button onclick="toggleDarkMode()">🌙 Modo oscuro</button>
+    <button onclick="increaseText()">Aumentar texto</button>
+    <button onclick="decreaseText()">Disminuir texto</button>
+    <button onclick="textToSpeech()">🗣️ Lectura de texto</button>
+    <button onclick="stopSpeech()">🔇 Detener lectura</button>
+  </aside>
+
+  <main>
+    <section class="welcome">
+      <h1>Diagnóstico Preliminar con IA</h1>
+      <p>Ingresa tus síntomas para obtener un diagnóstico orientativo.</p>
+
+      <!-- 🔍 Barra de búsqueda -->
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar consejos o temas de salud..." aria-label="Buscar en el panel">
+        <button onclick="buscar()">Buscar</button>
+      </div>
+      <div id="searchResults"></div>
+    </section>
+
+    <!-- 🧠 Diagnóstico -->
+    <section id="diagnostico">
+      <h2>Formulario de Síntomas</h2>
+      <form id="symptom-form">
+        <textarea id="symptoms" rows="4" required placeholder="Ejemplo: fiebre, tos seca, dolor de cabeza..."></textarea>
+        <br>
+        <button type="submit">Analizar</button>
+      </form>
+      <div id="result"></div>
+    </section>
+
+    <!-- 🎬 Videos educativos -->
+    <section id="videos">
+      <h2>Videos educativos</h2>
+      <video controls width="80%" aria-label="Video educativo sobre salud general" preload="metadata">
+        <source src="video.mp4" type="video/mp4">
+        <track src="video.mp4" kind="subtitles" srclang="es" label="Español" default>
+        Tu navegador no soporta video HTML5.
+      </video>
+      <p><strong>Transcripción:</strong> Este video explica temas de prevención o hábitos saludables.</p>
+
+      <video controls width="80%" aria-label="Video sobre hábitos saludables" preload="metadata" style="margin-top: 20px;">
+        <source src="video.mp4" type="video/mp4">
+        Tu navegador no soporta video HTML5.
+      </video>
+      <p><strong>Recomendación:</strong> Este segundo video trata sobre alimentación balanceada o ejercicio físico básico.</p>
+    </section>
+
+    <!-- 📰 Novedades -->
+    <section id="novedades">
+      <h2>🩺 Novedades y Consejos de Salud</h2>
+      <ul>
+        <li>💧 Mantente hidratado: al menos 2 litros de agua diarios.</li>
+        <li>😴 Dormir bien fortalece tu sistema inmunológico.</li>
+        <li>🥗 Incrementa el consumo de frutas y verduras frescas.</li>
+        <li>🚶 Realiza actividad física moderada al menos 30 minutos al día.</li>
+      </ul>
+    </section>
+
+    <!-- ⚙️ Diagnósticos recientes -->
+    <section id="recientes">
+      <h2>📋 Mis diagnósticos recientes</h2>
+      <div id="listaDiagnosticos">
+        <p>No hay diagnósticos registrados aún.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Diagnóstico IA | Soporte | Política de privacidad</p>
+  </footer>
+
+  <script src="script.js"></script>
+
+    <script>
+        // === BÚSQUEDA AVANZADA ===
+        function buscar() {
+        const input = document.getElementById("searchInput").value.toLowerCase().trim();
+        const results = document.getElementById("searchResults");
+
+        const temas = [
+            {
+            palabras: ["alimentacion", "comida", "nutricion", "dieta"],
+            texto: "🍎 Una alimentación balanceada mejora el sistema inmune. Incluye frutas, verduras, proteínas y evita el exceso de azúcares.",
+            },
+            {
+            palabras: ["ejercicio", "actividad", "deporte"],
+            texto: "🏃‍♂️ El ejercicio regular reduce el riesgo de enfermedades cardíacas y mejora tu estado de ánimo.",
+            },
+            {
+            palabras: ["sueño", "dormir", "descanso"],
+            texto: "😴 Dormir entre 7 y 8 horas favorece la memoria, la concentración y la salud hormonal.",
+            },
+            {
+            palabras: ["hidratacion", "agua", "beber"],
+            texto: "💧 Mantente hidratado. Beber suficiente agua ayuda a la digestión, la piel y el funcionamiento del cerebro.",
+            },
+            {
+            palabras: ["estres", "ansiedad", "tension"],
+            texto: "🧘‍♀️ Controlar el estrés mediante respiración, meditación o pausas activas puede prevenir enfermedades mentales y físicas.",
+            }
+        ];
+
+        let coincidencias = temas.filter(t =>
+            t.palabras.some(p => input.includes(p))
+        );
+
+        results.innerHTML = coincidencias.length
+            ? `<ul>${coincidencias.map(r => `<li>${r.texto}</li>`).join('')}</ul>`
+            : `<p>No se encontraron temas relacionados. Prueba con palabras como <em>alimentación, ejercicio, estrés...</em></p>`;
+        }
+
+        // === DIAGNÓSTICO "IA" REALISTA ===
+        document.getElementById("symptom-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const sintomas = document.getElementById("symptoms").value.toLowerCase();
+        let diagnostico = "";
+        let probabilidad = Math.floor(Math.random() * 21) + 70; // genera un 70–90%
+
+        if (sintomas.includes("tos") && sintomas.includes("fiebre")) {
+            diagnostico = "Podrías tener una infección respiratoria tipo gripe o bronquitis leve.";
+        } else if (sintomas.includes("dolor de cabeza") && sintomas.includes("mareo")) {
+            diagnostico = "Podría tratarse de migraña o presión arterial baja.";
+        } else if (sintomas.includes("dolor de estómago") || sintomas.includes("náusea") || sintomas.includes("vomito")) {
+            diagnostico = "Síntomas compatibles con una indigestión o infección gastrointestinal leve.";
+        } else if (sintomas.includes("ansiedad") || sintomas.includes("estres")) {
+            diagnostico = "Posibles signos de estrés o ansiedad. Prueba ejercicios de respiración o descanso.";
+        } else if (sintomas.includes("dolor muscular") || sintomas.includes("fatiga")) {
+            diagnostico = "Podría deberse a fatiga física o a una infección viral temporal.";
+        } else if (sintomas.includes("picazon") || sintomas.includes("erupcion")) {
+            diagnostico = "Podrías tener una reacción alérgica leve o dermatitis por contacto.";
+        } else if (sintomas.includes("fiebre alta") && sintomas.includes("dolor corporal")) {
+            diagnostico = "Posible cuadro de influenza. Consulta a un médico si los síntomas persisten.";
+        } else {
+            diagnostico = "No se puede determinar con precisión. Recomendamos una evaluación médica.";
+            probabilidad = 60;
+        }
+
+        document.getElementById("result").innerHTML = `
+            <div class="diagnostico-box">
+            <h3>🩺 Diagnóstico Preliminar</h3>
+            <p>${diagnostico}</p>
+            <p><strong>Probabilidad estimada:</strong> ${probabilidad}%</p>
+            </div>
+        `;
+
+        const lista = document.getElementById("listaDiagnosticos");
+        const nuevo = document.createElement("p");
+        nuevo.textContent = diagnostico + ` (${probabilidad}%)`;
+        lista.appendChild(nuevo);
+        });
+    </script>
+
+</body>
+</html>
