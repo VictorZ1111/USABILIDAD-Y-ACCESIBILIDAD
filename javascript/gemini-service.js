@@ -94,7 +94,7 @@ Recuerda: Esto NO sustituye una consulta médica real.`;
   // Análisis seguro (producción con serverless)
   async analizarSintomasSeguro(sintomas) {
     try {
-      console.log('🤖 Llamando a API segura...');
+      alert('🔍 Modo PRODUCCIÓN - Llamando a API serverless en: ' + this.apiEndpoint);
       
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
@@ -107,21 +107,29 @@ Recuerda: Esto NO sustituye una consulta médica real.`;
         })
       });
 
+      alert('📡 Respuesta recibida. Status: ' + response.status);
+
       if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
+        const errorText = await response.text();
+        alert('❌ Error del servidor: ' + errorText);
+        throw new Error('Error en la respuesta del servidor: ' + response.status);
       }
 
       const data = await response.json();
       
+      alert('📦 Datos recibidos. Success: ' + data.success);
+      
       if (!data.success) {
+        alert('❌ API respondió con error: ' + (data.error || 'Error desconocido'));
         throw new Error(data.error || 'Error desconocido');
       }
       
-      console.log('✅ Respuesta recibida');
+      alert('✅ Respuesta de IA recibida correctamente!');
       
       return data.respuesta;
       
     } catch (error) {
+      alert('💥 ERROR CATCH: ' + error.message);
       console.error('❌ Error con API:', error);
       console.error('📋 Detalles del error:', error.message);
       return 'Error: No se pudo obtener el diagnóstico. Por favor, verifica tu conexión e intenta nuevamente.';
@@ -421,7 +429,7 @@ Incluye:
   // Consejo seguro (producción con serverless)
   async generarConsejoSeguro(tema) {
     try {
-      console.log('💡 Generando consejo para:', tema);
+      alert('💡 Generando consejo en PRODUCCIÓN para: ' + tema);
       
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
@@ -434,21 +442,27 @@ Incluye:
         })
       });
 
+      alert('📡 Respuesta consejo status: ' + response.status);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        alert('❌ Error consejo: ' + errorText);
         throw new Error('Error en la respuesta del servidor');
       }
 
       const data = await response.json();
       
       if (!data.success) {
+        alert('❌ Consejo sin success: ' + (data.error || 'Error desconocido'));
         throw new Error(data.error || 'Error desconocido');
       }
       
-      console.log('✅ Consejo generado');
+      alert('✅ Consejo generado exitosamente!');
       
       return data.respuesta;
       
     } catch (error) {
+      alert('💥 ERROR generando consejo: ' + error.message);
       console.error('❌ Error generando consejo:', error);
       return 'Error: No se pudo generar el consejo. Por favor, verifica tu conexión e intenta nuevamente.';
     }
