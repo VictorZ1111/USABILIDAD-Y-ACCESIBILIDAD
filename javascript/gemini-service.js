@@ -95,7 +95,7 @@ Recuerda: Esto NO sustituye una consulta médica real.`;
   // Análisis seguro (producción con serverless)
   async analizarSintomasSeguro(sintomas) {
     try {
-      alert('🔍 Modo PRODUCCIÓN - Llamando a API serverless en: ' + this.apiEndpoint);
+      console.log('🔍 Modo PRODUCCIÓN - Llamando a API serverless en:', this.apiEndpoint);
       
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
@@ -108,31 +108,29 @@ Recuerda: Esto NO sustituye una consulta médica real.`;
         })
       });
 
-      alert('📡 Respuesta recibida. Status: ' + response.status);
+      console.log('📡 Respuesta recibida. Status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        alert('❌ Error del servidor: ' + errorText);
+        console.error('❌ Error del servidor:', errorText);
         throw new Error('Error en la respuesta del servidor: ' + response.status);
       }
 
       const data = await response.json();
       
-      alert('📦 Datos recibidos. Success: ' + data.success);
+      console.log('📦 Datos recibidos. Success:', data.success);
       
       if (!data.success) {
-        alert('❌ API respondió con error: ' + (data.error || 'Error desconocido'));
+        console.error('❌ API respondió con error:', data.error);
         throw new Error(data.error || 'Error desconocido');
       }
       
-      alert('✅ Respuesta de IA recibida correctamente!');
+      console.log('✅ Respuesta de IA recibida correctamente!');
       
       return data.respuesta;
       
     } catch (error) {
-      alert('💥 ERROR CATCH: ' + error.message);
-      console.error('❌ Error con API:', error);
-      console.error('📋 Detalles del error:', error.message);
+      console.error('💥 ERROR CATCH:', error.message);
       return 'Error: No se pudo obtener el diagnóstico. Por favor, verifica tu conexión e intenta nuevamente.';
     }
   }
@@ -430,7 +428,7 @@ Incluye:
   // Consejo seguro (producción con serverless)
   async generarConsejoSeguro(tema) {
     try {
-      alert('💡 Generando consejo en PRODUCCIÓN para: ' + tema);
+      console.log('💡 Generando consejo en PRODUCCIÓN para:', tema);
       
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
@@ -443,28 +441,27 @@ Incluye:
         })
       });
 
-      alert('📡 Respuesta consejo status: ' + response.status);
+      console.log('📡 Respuesta consejo status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        alert('❌ Error consejo: ' + errorText);
+        console.error('❌ Error consejo:', errorText);
         throw new Error('Error en la respuesta del servidor');
       }
 
       const data = await response.json();
       
       if (!data.success) {
-        alert('❌ Consejo sin success: ' + (data.error || 'Error desconocido'));
+        console.error('❌ Consejo sin success:', data.error);
         throw new Error(data.error || 'Error desconocido');
       }
       
-      alert('✅ Consejo generado exitosamente!');
+      console.log('✅ Consejo generado exitosamente!');
       
       return data.respuesta;
       
     } catch (error) {
-      alert('💥 ERROR generando consejo: ' + error.message);
-      console.error('❌ Error generando consejo:', error);
+      console.error('💥 ERROR generando consejo:', error.message);
       return 'Error: No se pudo generar el consejo. Por favor, verifica tu conexión e intenta nuevamente.';
     }
   }
