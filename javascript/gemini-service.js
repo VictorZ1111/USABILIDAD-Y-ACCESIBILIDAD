@@ -10,7 +10,7 @@ class GeminiService {
       // En local, usar API directamente (solo para pruebas)
       this.apiKey = 'AIzaSyByU1pz89RR7-AKpP7Rmsxgjei-JS_jxWM';
       this.model = 'gemini-1.5-flash';
-      this.endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/';
+      this.endpoint = 'https://generativelanguage.googleapis.com/v1/models/';
     } else {
       // En producción, usar API serverless (protegida)
       this.apiEndpoint = '/api/gemini';

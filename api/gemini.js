@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     console.log('✅ API key encontrada');
 
     const modelo = 'gemini-1.5-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${GEMINI_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1/models/${modelo}:generateContent?key=${GEMINI_API_KEY}`;
 
     // Crear prompt según el tipo
     let promptFinal = '';
