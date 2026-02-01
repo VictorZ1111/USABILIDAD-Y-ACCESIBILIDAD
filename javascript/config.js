@@ -8,10 +8,12 @@ const CONFIG = {
   },
 
   // === GEMINI AI ===
+  // La API key ahora está protegida en el servidor
+  // No se expone en el código del cliente
   gemini: {
-    apiKey: 'AIzaSyBh64QGGbw6tJyVFkUyepK34C9rM8hmkww',
-    model: 'gemini-3-flash-preview', 
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/',
+    apiKey: '', // Ya no se usa aquí
+    model: 'gemini-2.5-flash', 
+    endpoint: '/api/gemini', // Nuestro endpoint seguro
   },
 
   // === IDIOMAS DISPONIBLES ===

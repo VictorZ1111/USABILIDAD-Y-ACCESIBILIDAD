@@ -340,75 +340,185 @@ async function cargarHistorialDiagnosticos() {
 function mostrarDetalleDiagnostico(diagnostico) {
   console.log('Diagnóstico completo:', diagnostico);
   
-  // Si resultado es string JSON, parsearlo
-  let resultado = diagnostico.resultado;
-  if (typeof resultado === 'string') {
-    try {
-      resultado = JSON.parse(resultado);
-    } catch (e) {
-      console.error('Error al parsear resultado:', e);
-    }
+  const sintomas = diagnostico.sintomas;
+  let resultadoTexto = diagnostico.resultado;
+  
+  // Función para limpiar texto markdown
+  const limpiarTexto = (texto) => {
+    return texto
+      .replace(/\*\*/g, '')
+      .replace(/\*/g, '')
+      .replace(/###/g, '')
+      .replace(/##/g, '')
+      .replace(/#/g, '')
+      .replace(/---/g, '')
+      .replace(/\[([^\]]+)\]/g, '$1')
+      .trim();
+  };
+  
+  // Extraer secciones del texto guardado
+  const secciones = {
+    analisis: '',
+    causas: [],
+    evaluacion: '',
+    recomendaciones: []
+  };
+  
+  // Si hay un resultado en texto, parsearlo
+  if (resultadoTexto && typeof resultadoTexto === 'string') {
+    const lineas = resultadoTexto.split('\n');
+    let seccionActual = 'analisis';
+    
+    lineas.forEach(linea => {
+      const lineaLimpia = linea.trim();
+      
+      if (lineaLimpia.toLowerCase().includes('posibles causas')) {
+        seccionActual = 'causas';
+        return;
+      } else if (lineaLimpia.toLowerCase().includes('evaluación') || lineaLimpia.toLowerCase().includes('nivel de urgencia')) {
+        seccionActual = 'evaluacion';
+        return;
+      } else if (lineaLimpia.toLowerCase().includes('recomendaciones')) {
+        seccionActual = 'recomendaciones';
+        return;
+      }
+      
+      if (!lineaLimpia || lineaLimpia.startsWith('###') || lineaLimpia.startsWith('##') || lineaLimpia === '---') {
+        return;
+      }
+      
+      if (lineaLimpia.startsWith('*') || lineaLimpia.startsWith('-')) {
+        const textoLimpio = limpiarTexto(lineaLimpia.replace(/^[\*\-]\s*/, ''));
+        if (textoLimpio.length > 3) {
+          if (seccionActual === 'causas') {
+            secciones.causas.push(textoLimpio);
+          } else if (seccionActual === 'recomendaciones') {
+            secciones.recomendaciones.push(textoLimpio);
+          }
+        }
+      } else if (lineaLimpia.length > 10) {
+        const textoLimpio = limpiarTexto(lineaLimpia);
+        if (seccionActual === 'analisis') {
+          secciones.analisis += textoLimpio + ' ';
+        } else if (seccionActual === 'evaluacion') {
+          secciones.evaluacion += textoLimpio + ' ';
+        }
+      }
+    });
   }
   
-  const sintomas = diagnostico.sintomas;
-  
   let html = `
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-      <h2 style="margin: 0 0 10px 0;">📋 Diagnóstico Completo</h2>
-      <p style="margin: 0; opacity: 0.9;">${new Date(diagnostico.fecha).toLocaleString('es-ES')}</p>
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+        <span style="font-size: 2.5em;">📋</span>
+        <div>
+          <h2 style="margin: 0; font-size: 1.8em; font-weight: 600;">Diagnóstico Guardado</h2>
+          <p style="margin: 5px 0 0 0; opacity: 0.95; font-size: 0.95em;">${new Date(diagnostico.fecha).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' })}</p>
+        </div>
+      </div>
     </div>
     
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-      <h3 style="color: #667eea; margin-top: 0;">💬 Síntomas Reportados</h3>
-      <p style="line-height: 1.6; color: #333;">${sintomas}</p>
+    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <div style="display: flex; align-items: start; gap: 12px;">
+        <span style="font-size: 1.8em; margin-top: 2px;">💬</span>
+        <div style="flex: 1;">
+          <h3 style="color: #495057; margin: 0 0 10px 0; font-size: 1.3em; font-weight: 600;">Síntomas Reportados</h3>
+          <p style="line-height: 1.8; color: #495057; margin: 0; font-size: 1.05em;">${sintomas}</p>
+        </div>
+      </div>
     </div>
   `;
   
-  if (resultado) {
-    if (resultado.concepto) {
-      html += `
-        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-          <h3 style="color: #2ecc71; margin-top: 0;">🔍 Análisis</h3>
-          <p style="line-height: 1.6; color: #333;">${resultado.concepto}</p>
+  // Análisis
+  if (secciones.analisis) {
+    html += `
+      <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #2ecc71;">
+        <div style="display: flex; align-items: start; gap: 12px;">
+          <span style="font-size: 1.8em; margin-top: 2px;">🔍</span>
+          <div style="flex: 1;">
+            <h3 style="color: #2ecc71; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Análisis del Cuadro</h3>
+            <p style="line-height: 1.8; color: #495057; margin: 0; font-size: 1.05em; text-align: justify;">${secciones.analisis.trim()}</p>
+          </div>
         </div>
-      `;
-    }
-    
-    if (resultado.causas && resultado.causas.length > 0) {
-      html += `
-        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-          <h3 style="color: #e74c3c; margin-top: 0;">⚠️ Posibles Causas</h3>
-          <ul style="line-height: 1.8; color: #333;">
-            ${resultado.causas.map(causa => `<li>${causa}</li>`).join('')}
-          </ul>
+      </div>
+    `;
+  }
+  
+  // Causas
+  if (secciones.causas.length > 0) {
+    html += `
+      <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #e74c3c;">
+        <div style="display: flex; align-items: start; gap: 12px;">
+          <span style="font-size: 1.8em; margin-top: 2px;">⚠️</span>
+          <div style="flex: 1;">
+            <h3 style="color: #e74c3c; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Posibles Causas</h3>
+            <ul style="margin: 0; padding-left: 0; list-style: none;">
+              ${secciones.causas.map(causa => `
+                <li style="padding: 12px 0; border-bottom: 1px solid #f1f3f5; display: flex; align-items: start; gap: 10px;">
+                  <span style="color: #e74c3c; font-weight: bold; font-size: 1.2em; min-width: 20px;">•</span>
+                  <span style="color: #495057; line-height: 1.6; font-size: 1.05em;">${causa}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
         </div>
-      `;
-    }
-    
-    if (resultado.evaluacion) {
-      html += `
-        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-          <h3 style="color: #3498db; margin-top: 0;">📊 Evaluación Preliminar</h3>
-          <p style="line-height: 1.6; color: #333;">${resultado.evaluacion}</p>
+      </div>
+    `;
+  }
+  
+  // Evaluación
+  if (secciones.evaluacion) {
+    html += `
+      <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #3498db;">
+        <div style="display: flex; align-items: start; gap: 12px;">
+          <span style="font-size: 1.8em; margin-top: 2px;">📊</span>
+          <div style="flex: 1;">
+            <h3 style="color: #3498db; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Evaluación Preliminar</h3>
+            <p style="line-height: 1.8; color: #495057; margin: 0; font-size: 1.05em; text-align: justify;">${secciones.evaluacion.trim()}</p>
+          </div>
         </div>
-      `;
-    }
-    
-    if (resultado.recomendaciones && resultado.recomendaciones.length > 0) {
-      html += `
-        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-          <h3 style="color: #9b59b6; margin-top: 0;">💡 Recomendaciones</h3>
-          <ul style="line-height: 1.8; color: #333;">
-            ${resultado.recomendaciones.map(rec => `<li>${rec}</li>`).join('')}
-          </ul>
+      </div>
+    `;
+  }
+  
+  // Recomendaciones
+  if (secciones.recomendaciones.length > 0) {
+    html += `
+      <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #9b59b6;">
+        <div style="display: flex; align-items: start; gap: 12px;">
+          <span style="font-size: 1.8em; margin-top: 2px;">💡</span>
+          <div style="flex: 1;">
+            <h3 style="color: #9b59b6; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Recomendaciones para Sentirte Mejor</h3>
+            <ul style="margin: 0; padding-left: 0; list-style: none;">
+              ${secciones.recomendaciones.map(rec => `
+                <li style="padding: 12px 0; border-bottom: 1px solid #f1f3f5; display: flex; align-items: start; gap: 10px;">
+                  <span style="color: #9b59b6; font-weight: bold; font-size: 1.2em; min-width: 20px;">✓</span>
+                  <span style="color: #495057; line-height: 1.6; font-size: 1.05em;">${rec}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
         </div>
-      `;
-    }
+      </div>
+    `;
   }
   
   html += `
-    <button onclick="cerrarDetalleDiagnostico()" style="background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 10px;">
-      ← Volver al historial
+    <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%); border-radius: 12px; border: 2px solid #ffc107; box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);">
+      <div style="display: flex; align-items: start; gap: 15px;">
+        <span style="font-size: 2em; margin-top: 2px;">⚠️</span>
+        <div style="flex: 1;">
+          <h4 style="color: #856404; margin: 0 0 10px 0; font-size: 1.2em; font-weight: 600;">Aviso Importante</h4>
+          <p style="margin: 0; color: #856404; line-height: 1.7; font-size: 1em;">
+            Este es un análisis orientativo generado por Inteligencia Artificial. 
+            <strong>No reemplaza una consulta médica profesional.</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <button onclick="cerrarDetalleDiagnostico()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 15px 35px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: 600; margin-top: 25px; box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3); transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+      ← Volver al Historial
     </button>
   `;
   
@@ -614,122 +724,209 @@ if (document.getElementById('symptom-form')) {
     const result = document.getElementById('result');
     
     // Mostrar loading
-    result.innerHTML = '<p>⏳ Analizando síntomas con IA...</p>';
+    result.innerHTML = '<div style="text-align:center;padding:30px;"><p style="font-size:1.2em;color:#666;">⏳ Analizando síntomas con IA...</p></div>';
     
     try {
       // Analizar con Gemini AI
-      let analisis = await geminiAI.analizarSintomas(symptoms);
+      let diagnostico = await geminiAI.analizarSintomas(symptoms);
       
-      console.log('📊 Análisis recibido:', analisis);
-      
-      const severidadInfo = geminiAI.getSeveridadInfo(analisis.severidad);
+      console.log('📊 Diagnóstico recibido:', diagnostico);
       
       // LIMPIAR el formulario
       symptomsInput.value = '';
       
-      // Mostrar resultado completo y bonito
+      // Limpiar el texto de markdown
+      const limpiarTexto = (texto) => {
+        return texto
+          .replace(/\*\*/g, '') // Eliminar **
+          .replace(/\*/g, '')   // Eliminar *
+          .replace(/###/g, '')  // Eliminar ###
+          .replace(/##/g, '')   // Eliminar ##
+          .replace(/#/g, '')    // Eliminar #
+          .replace(/---/g, '')  // Eliminar ---
+          .replace(/\[([^\]]+)\]/g, '$1') // Eliminar []
+          .trim();
+      };
+      
+      // Extraer secciones del diagnóstico
+      const secciones = {
+        analisis: '',
+        causas: [],
+        evaluacion: '',
+        recomendaciones: []
+      };
+      
+      // Buscar secciones en el texto
+      const lineas = diagnostico.split('\n');
+      let seccionActual = 'analisis';
+      
+      lineas.forEach(linea => {
+        const lineaLimpia = linea.trim();
+        
+        // Detectar cambios de sección
+        if (lineaLimpia.toLowerCase().includes('posibles causas')) {
+          seccionActual = 'causas';
+          return;
+        } else if (lineaLimpia.toLowerCase().includes('evaluación') || lineaLimpia.toLowerCase().includes('nivel de urgencia')) {
+          seccionActual = 'evaluacion';
+          return;
+        } else if (lineaLimpia.toLowerCase().includes('recomendaciones')) {
+          seccionActual = 'recomendaciones';
+          return;
+        }
+        
+        // Saltar líneas vacías o headers
+        if (!lineaLimpia || lineaLimpia.startsWith('###') || lineaLimpia.startsWith('##') || lineaLimpia === '---') {
+          return;
+        }
+        
+        // Procesar listas (con * o -)
+        if (lineaLimpia.startsWith('*') || lineaLimpia.startsWith('-')) {
+          const textoLimpio = limpiarTexto(lineaLimpia.replace(/^[\*\-]\s*/, ''));
+          if (textoLimpio.length > 3) {
+            if (seccionActual === 'causas') {
+              secciones.causas.push(textoLimpio);
+            } else if (seccionActual === 'recomendaciones') {
+              secciones.recomendaciones.push(textoLimpio);
+            }
+          }
+        } 
+        // Procesar texto normal
+        else if (lineaLimpia.length > 10) {
+          const textoLimpio = limpiarTexto(lineaLimpia);
+          if (seccionActual === 'analisis') {
+            secciones.analisis += textoLimpio + ' ';
+          } else if (seccionActual === 'evaluacion') {
+            secciones.evaluacion += textoLimpio + ' ';
+          }
+        }
+      });
+      
+      // Construir HTML con diseño bonito y profesional
       let html = `
-        <div class="diagnostico-completo" style="border-left: 4px solid #2ecc71; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-          
-          <!-- ENCABEZADO -->
-          <div class="diagnostico-header" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); padding: 20px; border-radius: 10px; margin-bottom: 25px; color: white; text-align: center;">
-            <h3 style="margin: 0; font-size: 1.5em;">🩺 Diagnóstico Preliminar</h3>
-            <p style="margin: 8px 0 0 0; font-size: 0.95em; opacity: 0.95;">Análisis generado por Inteligencia Artificial</p>
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+            <span style="font-size: 2.5em;">🩺</span>
+            <div>
+              <h2 style="margin: 0; font-size: 1.8em; font-weight: 600;">Diagnóstico Preliminar</h2>
+              <p style="margin: 5px 0 0 0; opacity: 0.95; font-size: 0.95em;">${new Date().toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' })}</p>
+            </div>
           </div>
-      `;
-
-      // 1. CONCEPTO
-      if (analisis.concepto) {
-        html += `
-          <div class="seccion-diagnostico" style="margin-bottom: 25px;">
-            <h4 style="color: #2c3e50; font-size: 1.3em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-              <span>📋</span> Análisis
-            </h4>
-            <p style="line-height: 1.7; color: #555; font-size: 1.05em; background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 0;">${analisis.concepto}</p>
-          </div>
-        `;
-      }
-      
-      // 2. CAUSAS
-      if (analisis.causas && analisis.causas.length > 0) {
-        html += `
-          <div class="seccion-diagnostico" style="margin-bottom: 25px;">
-            <h4 style="color: #2c3e50; font-size: 1.3em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-              <span>🔍</span> Posibles Causas
-            </h4>
-            <ul class="lista-diagnostico" style="list-style: none; padding: 0; margin: 0;">
-              ${analisis.causas.map(causa => `
-                <li style="background: #fff3cd; padding: 12px 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid #ffc107; color: #856404; line-height: 1.6;">
-                  • ${causa}
-                </li>
-              `).join('')}
-            </ul>
-          </div>
-        `;
-      }
-      
-      // 3. EVALUACIÓN
-      if (analisis.evaluacion) {
-        html += `
-          <div class="seccion-diagnostico" style="margin-bottom: 25px;">
-            <h4 style="color: #2c3e50; font-size: 1.3em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-              <span>⚕️</span> Evaluación Preliminar
-            </h4>
-            <p style="line-height: 1.7; color: #555; font-size: 1.1em; background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 0; font-weight: 500;">${analisis.evaluacion}</p>
-          </div>
-        `;
-      }
-
-      // 2. RECOMENDACIONES - Para mejorar la condición
-      if (analisis.recomendaciones && analisis.recomendaciones.length > 0) {
-        html += `
-          <div class="seccion-diagnostico" style="margin-bottom: 25px;">
-            <h4 style="color: #2c3e50; font-size: 1.3em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-              <span>💡</span> Recomendaciones para Mejorar tu Condición
-            </h4>
-            <ul class="lista-diagnostico" style="list-style: none; padding: 0; margin: 0;">
-              ${analisis.recomendaciones.map(rec => `
-                <li style="background: #e8f5e9; padding: 12px 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid #2ecc71; color: #2c3e50; line-height: 1.6;">
-                  ✓ ${rec}
-                </li>
-              `).join('')}
-            </ul>
-          </div>
-        `;
-      }
-
-      // 3. CRÉDITOS Y DISCLAIMER
-      html += `
-        <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 10px; border: 1px solid #dee2e6;">
-          <div style="text-align: center; margin-bottom: 15px;">
-            <p style="margin: 0; font-size: 0.95em; color: #6c757d; line-height: 1.6;">
-              <strong style="color: #2c3e50;">⚠️ Aviso Importante:</strong><br>
-              Este es un análisis orientativo generado por Inteligencia Artificial. 
-              <strong>No reemplaza una consulta médica profesional.</strong><br>
-              Siempre consulta con un médico calificado para un diagnóstico preciso.
-            </p>
-          </div>
-          
-          ${analisis.esIA ? `
-          <div style="text-align: center; padding-top: 15px; border-top: 1px solid #dee2e6;">
-            <p style="margin: 0; font-size: 0.9em; color: #888; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <span style="font-size: 1.2em;">✨</span>
-              <span>Powered by <strong style="color: #4285f4;">Google Gemini AI</strong></span>
-            </p>
-            <p style="margin: 5px 0 0 0; font-size: 0.8em; color: #999;">Sistema de Diagnóstico IA - Proyecto Académico Usabilidad</p>
-          </div>
-          ` : ''}
         </div>
-      </div>
+        
+        <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="display: flex; align-items: start; gap: 12px;">
+            <span style="font-size: 1.8em; margin-top: 2px;">💬</span>
+            <div style="flex: 1;">
+              <h3 style="color: #495057; margin: 0 0 10px 0; font-size: 1.3em; font-weight: 600;">Síntomas Reportados</h3>
+              <p style="line-height: 1.8; color: #495057; margin: 0; font-size: 1.05em;">${symptoms}</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Análisis
+      if (secciones.analisis) {
+        html += `
+          <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #2ecc71;">
+            <div style="display: flex; align-items: start; gap: 12px;">
+              <span style="font-size: 1.8em; margin-top: 2px;">🔍</span>
+              <div style="flex: 1;">
+                <h3 style="color: #2ecc71; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Análisis del Cuadro</h3>
+                <p style="line-height: 1.8; color: #495057; margin: 0; font-size: 1.05em; text-align: justify;">${secciones.analisis.trim()}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Causas
+      if (secciones.causas.length > 0) {
+        html += `
+          <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #e74c3c;">
+            <div style="display: flex; align-items: start; gap: 12px;">
+              <span style="font-size: 1.8em; margin-top: 2px;">⚠️</span>
+              <div style="flex: 1;">
+                <h3 style="color: #e74c3c; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Posibles Causas</h3>
+                <ul style="margin: 0; padding-left: 0; list-style: none;">
+                  ${secciones.causas.map(causa => `
+                    <li style="padding: 12px 0; border-bottom: 1px solid #f1f3f5; display: flex; align-items: start; gap: 10px;">
+                      <span style="color: #e74c3c; font-weight: bold; font-size: 1.2em; min-width: 20px;">•</span>
+                      <span style="color: #495057; line-height: 1.6; font-size: 1.05em;">${causa}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Evaluación
+      if (secciones.evaluacion) {
+        html += `
+          <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #3498db;">
+            <div style="display: flex; align-items: start; gap: 12px;">
+              <span style="font-size: 1.8em; margin-top: 2px;">📊</span>
+              <div style="flex: 1;">
+                <h3 style="color: #3498db; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Evaluación Preliminar</h3>
+                <p style="line-height: 1.8; color: #495057; margin: 0; font-size: 1.05em; text-align: justify;">${secciones.evaluacion.trim()}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Recomendaciones
+      if (secciones.recomendaciones.length > 0) {
+        html += `
+          <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-top: 4px solid #9b59b6;">
+            <div style="display: flex; align-items: start; gap: 12px;">
+              <span style="font-size: 1.8em; margin-top: 2px;">💡</span>
+              <div style="flex: 1;">
+                <h3 style="color: #9b59b6; margin: 0 0 15px 0; font-size: 1.3em; font-weight: 600;">Recomendaciones para Sentirte Mejor</h3>
+                <ul style="margin: 0; padding-left: 0; list-style: none;">
+                  ${secciones.recomendaciones.map(rec => `
+                    <li style="padding: 12px 0; border-bottom: 1px solid #f1f3f5; display: flex; align-items: start; gap: 10px;">
+                      <span style="color: #9b59b6; font-weight: bold; font-size: 1.2em; min-width: 20px;">✓</span>
+                      <span style="color: #495057; line-height: 1.6; font-size: 1.05em;">${rec}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Aviso importante
+      html += `
+        <div style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%); border-radius: 12px; border: 2px solid #ffc107; box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);">
+          <div style="display: flex; align-items: start; gap: 15px;">
+            <span style="font-size: 2em; margin-top: 2px;">⚠️</span>
+            <div style="flex: 1;">
+              <h4 style="color: #856404; margin: 0 0 10px 0; font-size: 1.2em; font-weight: 600;">Aviso Importante</h4>
+              <p style="margin: 0; color: #856404; line-height: 1.7; font-size: 1em;">
+                Este es un análisis orientativo generado por Inteligencia Artificial. 
+                <strong>No reemplaza una consulta médica profesional.</strong><br>
+                Siempre consulta con un médico calificado para un diagnóstico preciso y tratamiento adecuado.
+              </p>
+            </div>
+          </div>
+        </div>
       `;
       
       result.innerHTML = html;
       
-      // Guardar en base de datos con el objeto completo de análisis
+      // Guardar en base de datos con información completa
       await supabaseDB.guardarDiagnostico({
         sintomas: symptoms,
-        resultado: analisis,  // Guardar el objeto completo, no solo concepto
-        severidad: analisis.severidad
+        resultado: diagnostico,
+        analisis: secciones.analisis || diagnostico.substring(0, 200),
+        causas: secciones.causas.join(', '),
+        evaluacion: secciones.evaluacion,
+        recomendaciones: secciones.recomendaciones.join(', '),
+        severidad: 'moderado'
       });
       
       // Recargar lista de diagnósticos recientes
@@ -737,7 +934,7 @@ if (document.getElementById('symptom-form')) {
       
     } catch (error) {
       console.error('Error en diagnóstico:', error);
-      result.innerHTML = '<p style="color: red;">❌ Error al analizar. Por favor, intenta de nuevo.</p>';
+      result.innerHTML = '<div style="background:#ffebee;border:2px solid #f44336;padding:20px;border-radius:10px;margin-top:20px;"><p style="color:#c62828;margin:0;"><strong>❌ Error:</strong> No se pudo analizar los síntomas. Por favor, verifica tu conexión e intenta nuevamente.</p></div>';
     }
   });
 }
@@ -855,57 +1052,48 @@ async function buscar() {
   const results = document.getElementById("searchResults");
 
   if (!input) {
-    results.innerHTML = '<p>Por favor, ingresa un término de búsqueda.</p>';
+    results.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">Por favor, ingresa un término de búsqueda.</p>';
     return;
   }
 
   // Mostrar loading
-  results.innerHTML = '<p>🔍 Buscando información con IA...</p>';
+  results.innerHTML = '<div style="text-align:center;padding:30px;"><p style="font-size:1.2em;color:#666;">🔍 Buscando información con IA...</p></div>';
 
   try {
-    // Generar consejo con Gemini AI
+    // Generar consejo con Gemini AI (ahora devuelve texto simple)
     const consejo = await geminiAI.generarConsejo(input);
+    
+    // Convertir markdown a HTML formateado
+    let htmlFormateado = consejo
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/---/g, '<hr style="border:none;border-top:2px solid #e0e0e0;margin:20px 0;">')
+      .replace(/### ([^\n]+)/g, '<h4 style="color:#4CAF50;margin:20px 0 10px 0;font-size:1.2em;">$1</h4>')
+      .replace(/## ([^\n]+)/g, '<h3 style="color:#2e7d32;margin:25px 0 15px 0;font-size:1.4em;">$1</h3>')
+      .replace(/# ([^\n]+)/g, '<h2 style="color:#1b5e20;margin:30px 0 20px 0;font-size:1.6em;">$1</h2>')
+      .replace(/\n\* ([^\n]+)/g, '<li style="margin-left:20px;margin-bottom:8px;line-height:1.6;">$1</li>')
+      .replace(/(<li[^>]*>.*<\/li>)/gs, '<ul style="margin:10px 0;padding-left:20px;list-style-type:disc;">$1</ul>')
+      .replace(/\n\n/g, '</p><p style="margin:15px 0;line-height:1.8;color:#333;">')
+      .replace(/\n/g, '<br>');
+    
+    if (!htmlFormateado.startsWith('<')) {
+      htmlFormateado = '<p style="margin:15px 0;line-height:1.8;color:#333;">' + htmlFormateado + '</p>';
+    }
     
     // Mostrar resultados
     let html = `
-      <div class="consejo-resultado">
-        <h3>✨ ${consejo.titulo}</h3>
-        <p><strong>📋 Información:</strong></p>
-        <p>${consejo.explicacion}</p>
-    `;
-
-    if (consejo.consejos && consejo.consejos.length > 0) {
-      html += `
-        <p><strong>💡 Consejos Prácticos:</strong></p>
-        <ul>
-          ${consejo.consejos.map(c => `<li>${c}</li>`).join('')}
-        </ul>
-      `;
-    }
-
-    if (consejo.senalesAlerta && consejo.senalesAlerta.length > 0) {
-      html += `
-        <p><strong>⚠️ Señales de Alerta:</strong></p>
-        <ul>
-          ${consejo.senalesAlerta.map(s => `<li>${s}</li>`).join('')}
-        </ul>
-      `;
-    }
-
-    if (consejo.prevencion && consejo.prevencion.length > 0) {
-      html += `
-        <p><strong>🛡️ Prevención:</strong></p>
-        <ul>
-          ${consejo.prevencion.map(p => `<li>${p}</li>`).join('')}
-        </ul>
-      `;
-    }
-
-    html += `
-        <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px;">
-          <strong>⚠️ Nota:</strong> Esta información es orientativa. Siempre consulta con un profesional de la salud.
-        </p>
-        ${consejo.esIA ? '<p style="font-size: 0.9em; color: #666;">✨ Generado por Gemini AI</p>' : ''}
+      <div class="consejo-resultado" style="background:#fff;padding:25px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);margin-top:20px;border-left:4px solid #4CAF50;">
+        
+        <div style="background:linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);padding:20px;border-radius:10px;margin-bottom:25px;color:white;text-align:center;">
+          <h3 style="margin:0;font-size:1.5em;">💡 Información de Salud</h3>
+          <p style="margin:8px 0 0 0;font-size:0.95em;opacity:0.95;">Generado por Inteligencia Artificial</p>
+        </div>
+        
+        <div style="font-size:1.05em;background:#f8f9fa;padding:20px;border-radius:8px;margin-bottom:20px;">${htmlFormateado}</div>
+        
+        <div style="background:#fff3cd;border:2px solid #ffc107;padding:15px;border-radius:8px;text-align:center;">
+          <p style="margin:0;color:#856404;"><strong>⚠️ Nota:</strong> Esta información es orientativa. Siempre consulta con un profesional de la salud.</p>
+        </div>
       </div>
     `;
 
@@ -913,14 +1101,10 @@ async function buscar() {
   } catch (error) {
     console.error('Error en búsqueda:', error);
     results.innerHTML = `
-      <p style="color: #d9534f;">❌ Error al buscar información. Por favor, intenta nuevamente.</p>
-      <p>Mientras tanto, aquí hay algunos consejos generales:</p>
-      <ul>
-        <li>💧 Mantén una buena hidratación</li>
-        <li>🥗 Come de forma balanceada</li>
-        <li>😴 Descansa adecuadamente</li>
-        <li>🏃 Realiza actividad física</li>
-      </ul>
+      <div style="background:#ffebee;border:2px solid #f44336;padding:20px;border-radius:10px;margin-top:20px;">
+        <p style="color:#c62828;margin:0;"><strong>❌ Error:</strong> No se pudo obtener la información. Por favor, verifica tu conexión e intenta nuevamente.</p>
+      </div>
     `;
   }
 }
+

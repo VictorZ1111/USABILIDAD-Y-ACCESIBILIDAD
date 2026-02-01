@@ -2,45 +2,129 @@
 
 class GeminiService {
   constructor() {
-    this.apiKey = CONFIG.gemini.apiKey;
-    this.model = CONFIG.gemini.model;
-    this.endpoint = CONFIG.gemini.endpoint;
-    this.isConfigured = !this.apiKey.includes('TU_GEMINI');
+    // Detectar si estamos en local o producción
+    this.isLocal = window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1';
+    
+    if (this.isLocal) {
+      // En local, usar API directamente (solo para pruebas)
+      this.apiKey = 'AIzaSyByU1pz89RR7-AKpP7Rmsxgjei-JS_jxWM';
+      this.model = 'gemini-2.5-flash';
+      this.endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/';
+    } else {
+      // En producción, usar API serverless (protegida)
+      this.apiEndpoint = '/api/gemini';
+    }
   }
 
   // === ANÁLISIS DE SÍNTOMAS CON IA ===
   async analizarSintomas(sintomas) {
     console.log('🔍 Iniciando análisis de síntomas...');
     console.log('📝 Síntomas recibidos:', sintomas);
-    console.log('🔑 API Key configurada:', this.isConfigured);
     
-    if (!this.isConfigured) {
-      console.warn('⚠️ Gemini API no configurada. Usando diagnóstico básico.');
-      return this.diagnosticoBasico(sintomas);
+    if (this.isLocal) {
+      // Modo local - usar API directamente
+      return await this.analizarSintomasDirecto(sintomas);
+    } else {
+      // Modo producción - usar API serverless
+      return await this.analizarSintomasSeguro(sintomas);
     }
-
+  }
+  
+  // Análisis directo (solo local)
+  async analizarSintomasDirecto(sintomas) {
     try {
-      console.log('🤖 Llamando a Gemini AI...');
-      const prompt = this.crearPromptMedico(sintomas);
-      const resultado = await this.llamarGeminiAPI(prompt);
+      const url = `${this.endpoint}${this.model}:generateContent?key=${this.apiKey}`;
       
-      console.log('✅ Respuesta de Gemini recibida:', resultado);
+      const prompt = `Eres un asistente médico virtual. Analiza los siguientes síntomas y proporciona un diagnóstico preliminar educativo.
+
+Síntomas del paciente: ${sintomas}
+
+Proporciona tu respuesta EXACTAMENTE con estas secciones en este orden:
+
+### Análisis
+[Explica qué condición o enfermedad podría tener el paciente basándote en los síntomas. Sé claro y directo sobre el posible diagnóstico]
+
+### Posibles Causas
+* [Lista las posibles causas de estos síntomas]
+* [Una causa por línea con viñetas]
+
+### Evaluación Preliminar
+[Indica el nivel de urgencia (leve/moderado/urgente) y qué tan serio podría ser el cuadro]
+
+### Recomendaciones
+* [Lista recomendaciones para sentirse mejor]
+* [Qué hacer en casa]
+* [Medicamentos de venta libre si aplica]
+* [Cuándo buscar ayuda médica]
+
+Recuerda: Esto NO sustituye una consulta médica real.`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta de Gemini');
+      }
+
+      const data = await response.json();
+      const respuesta = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                        'No se pudo generar una respuesta';
       
-      return {
-        concepto: resultado.concepto,
-        causas: resultado.causas,
-        evaluacion: resultado.evaluacion,
-        recomendaciones: resultado.recomendaciones,
-        senalesAlerta: resultado.senalesAlerta,
-        consultarSi: resultado.consultarSi,
-        severidad: this.determinarSeveridad(resultado.evaluacion + ' ' + resultado.urgencia),
-        esIA: true
-      };
+      console.log('✅ Diagnóstico generado (local)');
+      return respuesta;
+      
     } catch (error) {
-      console.error('❌ Error con Gemini API:', error);
+      console.error('❌ Error:', error);
+      return 'Error: No se pudo obtener el diagnóstico. Verifica tu conexión.';
+    }
+  }
+  
+  // Análisis seguro (producción con serverless)
+  async analizarSintomasSeguro(sintomas) {
+    try {
+      console.log('🤖 Llamando a API segura...');
+      
+      const response = await fetch(this.apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: sintomas,
+          tipo: 'diagnostico'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Error desconocido');
+      }
+      
+      console.log('✅ Respuesta recibida');
+      
+      return data.respuesta;
+      
+    } catch (error) {
+      console.error('❌ Error con API:', error);
       console.error('📋 Detalles del error:', error.message);
-      // Fallback al diagnóstico básico
-      return this.diagnosticoBasico(sintomas);
+      return 'Error: No se pudo obtener el diagnóstico. Por favor, verifica tu conexión e intenta nuevamente.';
     }
   }
 
@@ -277,41 +361,96 @@ Responde en formato JSON:
   }
 
   // === GENERAR CONSEJO DE SALUD ===
+
   async generarConsejo(tema) {
-    if (!this.isConfigured) {
-      console.warn('⚠️ Gemini API no configurada. Usando consejos predeterminados.');
-      return this.consejoPredeterminado(tema);
+    if (this.isLocal) {
+      // Modo local - usar API directamente
+      return await this.generarConsejoDirecto(tema);
+    } else {
+      // Modo producción - usar API serverless
+      return await this.generarConsejoSeguro(tema);
     }
-
+  }
+  
+  // Consejo directo (solo local)
+  async generarConsejoDirecto(tema) {
     try {
-      const prompt = `Eres un experto en salud y bienestar. El usuario busca información sobre: "${tema}".
+      const url = `${this.endpoint}${this.model}:generateContent?key=${this.apiKey}`;
+      
+      const prompt = `Eres un consejero de salud. Proporciona información confiable y consejos prácticos sobre el siguiente tema de salud:
 
-Proporciona:
-1. Una explicación clara y concisa del tema (2-3 párrafos)
-2. 3-5 consejos prácticos y específicos
-3. Señales de alerta (cuándo consultar a un médico)
-4. Recomendaciones de prevención
+Tema: ${tema}
 
-IMPORTANTE:
-- Usa lenguaje simple y amigable
-- Sé específico y práctico
-- Incluye datos útiles
-- Menciona que esto es información general, no diagnóstico
+Incluye:
+1. Información general y confiable
+2. Consejos prácticos y aplicables
+3. Prevención cuando sea relevante
+4. Cuándo consultar a un profesional`;
 
-Responde en formato JSON:
-{
-  "titulo": "Título del tema",
-  "explicacion": "Explicación del tema",
-  "consejos": ["Consejo 1", "Consejo 2", "Consejo 3"],
-  "senalesAlerta": ["Señal 1", "Señal 2"],
-  "prevencion": ["Prevención 1", "Prevención 2"]
-}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }]
+        })
+      });
 
-      const resultado = await this.llamarGeminiConsejoAPI(prompt);
-      return resultado;
+      if (!response.ok) {
+        throw new Error('Error en la respuesta de Gemini');
+      }
+
+      const data = await response.json();
+      const respuesta = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                        'No se pudo generar un consejo';
+      
+      console.log('✅ Consejo generado (local)');
+      return respuesta;
+      
+    } catch (error) {
+      console.error('❌ Error:', error);
+      return 'Error: No se pudo generar el consejo. Verifica tu conexión.';
+    }
+  }
+  
+  // Consejo seguro (producción con serverless)
+  async generarConsejoSeguro(tema) {
+    try {
+      console.log('💡 Generando consejo para:', tema);
+      
+      const response = await fetch(this.apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: tema,
+          tipo: 'consejo'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Error desconocido');
+      }
+      
+      console.log('✅ Consejo generado');
+      
+      return data.respuesta;
+      
     } catch (error) {
       console.error('❌ Error generando consejo:', error);
-      return this.consejoPredeterminado(tema);
+      return 'Error: No se pudo generar el consejo. Por favor, verifica tu conexión e intenta nuevamente.';
     }
   }
 
