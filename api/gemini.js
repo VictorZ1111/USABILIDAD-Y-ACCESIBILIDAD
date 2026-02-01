@@ -40,15 +40,29 @@ export default async function handler(req, res) {
     // Crear prompt según el tipo
     let promptFinal = '';
     if (tipo === 'diagnostico') {
-      promptFinal = `Eres un asistente médico virtual. Analiza los siguientes síntomas y proporciona un diagnóstico preliminar educativo. Recuerda que esto NO sustituye una consulta médica real.
+      promptFinal = `Eres un asistente médico virtual. Analiza los siguientes síntomas y proporciona un diagnóstico preliminar educativo.
 
 Síntomas del paciente: ${prompt}
 
-Proporciona:
-1. Posibles causas
-2. Nivel de urgencia (leve/moderado/urgente)
-3. Recomendaciones generales
-4. Cuándo buscar atención médica inmediata`;
+Proporciona tu respuesta EXACTAMENTE con estas secciones en este orden:
+
+### Análisis
+[Explica qué condición o enfermedad podría tener el paciente basándote en los síntomas. Sé claro y directo sobre el posible diagnóstico]
+
+### Posibles Causas
+* [Lista las posibles causas de estos síntomas]
+* [Una causa por línea con viñetas]
+
+### Evaluación Preliminar
+[Indica el nivel de urgencia (leve/moderado/urgente) y qué tan serio podría ser el cuadro]
+
+### Recomendaciones
+* [Lista recomendaciones para sentirse mejor]
+* [Qué hacer en casa]
+* [Medicamentos de venta libre si aplica]
+* [Cuándo buscar ayuda médica]
+
+Recuerda: Esto NO sustituye una consulta médica real.`;
     } else if (tipo === 'consejo') {
       promptFinal = `Eres un consejero de salud. Proporciona información confiable y consejos prácticos sobre el siguiente tema de salud:
 
