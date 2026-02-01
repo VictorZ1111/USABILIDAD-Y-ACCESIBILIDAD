@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Usuario</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">🤖 Diagnóstico IA</div>
+    <nav>
+      <a href="index.html" class="btn-volver">Volver al inicio</a>
+    </nav>
+  </header>
+
+  <main class="form-container">
+    <h2>Registrarse</h2>
+    <form id="registerForm">
+      <label for="newEmail">Correo electrónico:</label>
+      <input type="email" id="newEmail" required placeholder="ejemplo@correo.com">
+      
+      <label for="newUser">Nombre de usuario:</label>
+      <input type="text" id="newUser" required placeholder="Tu nombre de usuario">
+      
+      <label for="newPass">Contraseña (mínimo 6 caracteres):</label>
+      <input type="password" id="newPass" required minlength="6" placeholder="Tu contraseña">
+      
+      <button type="submit">Crear cuenta</button>
+    </form>
+    <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+  </main>
+
+  <footer>
+    <p>© 2025 Diagnóstico IA | 
+      <a href="soporte.html" style="color: inherit; text-decoration: underline;">Soporte</a> | 
+      <a href="#" onclick="mostrarPoliticas(event)" style="color: inherit; text-decoration: underline; cursor: pointer;">Política de privacidad</a> | 
+      <a href="#" onclick="mostrarAcercaDe(event)" style="color: inherit; text-decoration: underline; cursor: pointer;">Acerca del proyecto</a>
+    </p>
+  </footer>
+
+  <!-- Supabase Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Archivos de configuración e integración -->
+  <script src="../javascript/config.js"></script>
+  <script src="../javascript/supabase-client.js"></script>
+  <script src="../javascript/gemini-service.js"></script>
+  <script src="../javascript/i18n.js"></script>
+  <script src="../javascript/script.js"></script>
+</body>
+</html>

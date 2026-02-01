@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio - Diagnóstico IA</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header role="banner">
+    <div class="logo" aria-label="Logo de Diagnóstico IA">🤖 Diagnóstico IA</div>
+    <div class="nav-buttons" role="navigation" aria-label="Navegación principal">
+      <button onclick="location.href='login.html'" aria-label="Ir a iniciar sesión">Iniciar Sesión</button>
+      <button onclick="location.href='register.html'" aria-label="Ir a registrarse">Registrarse</button>
+    </div>
+  </header>
+
+  <button id="menu-btn" aria-label="Abrir menú de accesibilidad" aria-expanded="false" aria-controls="sidebar">☰</button>
+  <aside id="sidebar" role="complementary" aria-label="Menú de accesibilidad" role="complementary" aria-label="Menú de accesibilidad">
+    <h2>Menú de Accesibilidad</h2>
+    
+    <!-- Tema -->
+    <div class="menu-item">
+      <button class="menu-toggle" onclick="toggleSubmenu('tema-options')" aria-expanded="false">
+        🎨 Tema <span class="arrow">▼</span>
+      </button>
+      <div id="tema-options" class="submenu" hidden>
+        <button onclick="setTheme('light')" aria-label="Activar tema claro">☀️ Claro</button>
+        <button onclick="setTheme('dark')" aria-label="Activar tema oscuro">🌙 Oscuro</button>
+      </div>
+    </div>
+
+    <!-- Idioma -->
+    <div class="menu-item">
+      <button class="menu-toggle" onclick="toggleSubmenu('idioma-options')" aria-expanded="false">
+        🌍 Idioma <span class="arrow">▼</span>
+      </button>
+      <div id="idioma-options" class="submenu" hidden>
+        <button onclick="i18n.changeLanguage('es')" aria-label="Cambiar a español">🇪🇸 Español</button>
+        <button onclick="i18n.changeLanguage('en')" aria-label="Cambiar a inglés">🇺🇸 English</button>
+      </div>
+    </div>
+
+    <!-- Tamaño de Texto -->
+    <div class="menu-item">
+      <button class="menu-toggle" onclick="toggleSubmenu('texto-options')" aria-expanded="false">
+        🔤 Tamaño de Texto <span class="arrow">▼</span>
+      </button>
+      <div id="texto-options" class="submenu" hidden>
+        <button onclick="increaseText()" aria-label="Aumentar tamaño del texto">➕ Aumentar</button>
+        <button onclick="decreaseText()" aria-label="Disminuir tamaño del texto">➖ Disminuir</button>
+        <button onclick="resetText()" aria-label="Restablecer tamaño del texto">🔄 Restablecer</button>
+      </div>
+    </div>
+
+    <!-- Lectura de Texto -->
+    <div class="menu-item">
+      <button class="menu-toggle" onclick="toggleSubmenu('lectura-options')" aria-expanded="false">
+        🗣️ Lectura de Texto <span class="arrow">▼</span>
+      </button>
+      <div id="lectura-options" class="submenu" hidden>
+        <button onclick="textToSpeech()" aria-label="Activar lectura de texto">▶️ Iniciar</button>
+        <button onclick="stopSpeech()" aria-label="Detener lectura de texto">⏹️ Detener</button>
+      </div>
+    </div>
+  </aside>
+
+  <main id="main-content" role="main">
+    <section class="welcome" aria-labelledby="welcome-heading">
+      <h1 id="welcome-heading">Bienvenido al Sistema de Diagnóstico con IA</h1>
+      <p>
+        Este sitio te permite ingresar tus síntomas para obtener una orientación inicial basada en inteligencia artificial.
+      </p>
+      <p style="margin: 20px 0; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px;">
+        <strong>⚠️ Importante:</strong> Para utilizar el sistema de diagnóstico, primero debes <strong>iniciar sesión</strong> o <strong>registrarte</strong>.
+      </p>
+      <button onclick="location.href='login.html'" aria-label="Comenzar diagnóstico" style="padding: 15px 30px; font-size: 18px;">
+        Comenzar Diagnóstico
+      </button>
+    </section>
+
+    <section class="info" aria-labelledby="how-it-works">
+      <h2 id="how-it-works">¿Cómo funciona?</h2>
+      <p>
+        Nuestro sistema utiliza <strong>inteligencia artificial avanzada</strong> (Google Gemini) para analizar tus síntomas y ofrecer orientación médica preliminar.
+      </p>
+      <ul style="text-align: left; max-width: 600px; margin: 20px auto; line-height: 1.8;">
+        <li>🔍 <strong>Análisis inteligente:</strong> IA procesa tus síntomas en lenguaje natural</li>
+        <li>🎯 <strong>Clasificación de severidad:</strong> Leve, Moderado o Urgente</li>
+        <li>💡 <strong>Recomendaciones personalizadas:</strong> Basadas en tu caso específico</li>
+        <li>📊 <strong>Historial médico:</strong> Guarda tus consultas anteriores</li>
+        <li>♿ <strong>Totalmente accesible:</strong> Diseñado para todos</li>
+      </ul>
+      <p style="margin-top: 20px;">
+        Recuerda: <strong>no sustituye la consulta médica profesional.</strong>
+      </p>
+      <video controls width="80%" aria-label="Video introductorio sobre el diagnóstico IA">
+        <source src="../assets/videos/video1.mp4" type="video/mp4" />
+        <track src="../assets/videos/subtitulos/tutorial-navegacion-es.vtt" kind="subtitles" srclang="es" label="Español" default>
+        <track src="../assets/videos/subtitulos/tutorial-navegacion-en.vtt" kind="subtitles" srclang="en" label="English">
+        Tu navegador no soporta video HTML5.
+      </video>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer-grid">
+      <a href="soporte.html">Soporte</a>
+      <a href="#" onclick="mostrarPoliticas(event)">Política de privacidad</a>
+      <a href="#" onclick="mostrarAcercaDe(event)">Acerca del proyecto</a>
+    </div>
+    <p>© 2025 Diagnóstico IA | Proyecto académico</p>
+  </footer>
+
+  <!-- Supabase Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Archivos de configuración e integración -->
+  <script src="../javascript/config.js"></script>
+  <script src="../javascript/supabase-client.js"></script>
+  <script src="../javascript/gemini-service.js"></script>
+  <script src="../javascript/i18n.js"></script>
+  <script src="../javascript/script.js"></script>
+</body>
+</html>

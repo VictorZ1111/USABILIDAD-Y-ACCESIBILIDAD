@@ -1,0 +1,123 @@
+{
+  "common": {
+    "appName": "Diagnóstico IA",
+    "welcome": "Bienvenido",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "back": "Volver",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "search": "Buscar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "nav": {
+    "home": "Inicio",
+    "dashboard": "Panel Principal",
+    "support": "Soporte",
+    "privacy": "Política de privacidad",
+    "about": "Acerca del proyecto"
+  },
+  "home": {
+    "title": "Bienvenido al Sistema de Diagnóstico con IA",
+    "description": "Este sitio te permite ingresar tus síntomas para obtener una orientación inicial, regístrate o inicia sesión para acceder al diagnóstico.",
+    "startButton": "Comenzar Diagnóstico",
+    "howItWorks": "¿Cómo funciona?",
+    "howItWorksText": "Nuestro sistema usa inteligencia artificial para analizar tus síntomas y ofrecer una orientación general.",
+    "disclaimer": "Recuerda: no sustituye la consulta médica profesional."
+  },
+  "login": {
+    "title": "Iniciar Sesión",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "usernamePlaceholder": "Tu nombre de usuario",
+    "passwordPlaceholder": "Tu contraseña",
+    "submit": "Entrar",
+    "noAccount": "¿No tienes cuenta?",
+    "registerLink": "Regístrate aquí"
+  },
+  "register": {
+    "title": "Registrarse",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "submit": "Crear cuenta",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "loginLink": "Inicia sesión"
+  },
+  "dashboard": {
+    "title": "Diagnóstico Preliminar con IA",
+    "description": "Ingresa tus síntomas para obtener un diagnóstico orientativo.",
+    "searchPlaceholder": "Buscar consejos o temas de salud...",
+    "searchButton": "Buscar",
+    "symptomFormTitle": "Formulario de Síntomas",
+    "symptomPlaceholder": "Ejemplo: fiebre, tos seca, dolor de cabeza...",
+    "analyzeButton": "Analizar",
+    "educationalVideos": "Videos educativos",
+    "healthTips": "Novedades y Consejos de Salud",
+    "recentDiagnostics": "Mis diagnósticos recientes",
+    "noDiagnostics": "No hay diagnósticos registrados aún."
+  },
+  "diagnostic": {
+    "preliminaryTitle": "Diagnóstico Preliminar",
+    "severity": "Nivel de severidad",
+    "recommendations": "Recomendaciones",
+    "whenToSeek": "Cuándo consultar un médico",
+    "estimatedProbability": "Probabilidad estimada",
+    "aiPowered": "Análisis con IA",
+    "basicAnalysis": "Análisis básico"
+  },
+  "severity": {
+    "low": "Leve",
+    "moderate": "Moderado",
+    "urgent": "Urgente",
+    "lowDesc": "Síntomas menores. Puedes manejarlos en casa.",
+    "moderateDesc": "Requiere atención médica pronto.",
+    "urgentDesc": "¡Busca atención médica inmediata!"
+  },
+  "accessibility": {
+    "menu": "Accesibilidad",
+    "darkMode": "Modo oscuro",
+    "increaseText": "Aumentar texto",
+    "decreaseText": "Disminuir texto",
+    "textToSpeech": "Lectura de texto",
+    "stopSpeech": "Detener lectura",
+    "keyboardShortcuts": "Atajos de teclado",
+    "skipToContent": "Saltar al contenido principal"
+  },
+  "support": {
+    "title": "Centro de Soporte y Contacto",
+    "faqTitle": "Preguntas Frecuentes",
+    "faq1Q": "¿Cómo funciona el diagnóstico?",
+    "faq1A": "El sistema analiza tus síntomas y genera sugerencias según coincidencias con patrones comunes.",
+    "faq2Q": "¿El diagnóstico es médico?",
+    "faq2A": "No. Es orientativo. Siempre debes confirmar con un profesional de salud.",
+    "contactTitle": "Contáctanos",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "message": "Mensaje",
+    "sendButton": "Enviar"
+  },
+  "healthTips": {
+    "hydration": "Mantente hidratado: al menos 2 litros de agua diarios.",
+    "sleep": "Dormir bien fortalece tu sistema inmunológico.",
+    "nutrition": "Incrementa el consumo de frutas y verduras frescas.",
+    "exercise": "Realiza actividad física moderada al menos 30 minutos al día."
+  },
+  "footer": {
+    "copyright": "© 2025 Diagnóstico IA | Proyecto académico",
+    "support": "Soporte",
+    "privacy": "Política de privacidad",
+    "about": "Acerca del proyecto"
+  },
+  "aria": {
+    "openMenu": "Abrir menú de accesibilidad",
+    "closeMenu": "Cerrar menú",
+    "searchInput": "Campo de búsqueda",
+    "symptomInput": "Ingresa tus síntomas aquí",
+    "videoPlayer": "Reproductor de video educativo"
+  }
+}

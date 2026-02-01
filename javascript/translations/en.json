@@ -1,0 +1,123 @@
+{
+  "common": {
+    "appName": "AI Diagnosis",
+    "welcome": "Welcome",
+    "login": "Sign In",
+    "register": "Sign Up",
+    "logout": "Sign Out",
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "support": "Support",
+    "privacy": "Privacy Policy",
+    "about": "About the project"
+  },
+  "home": {
+    "title": "Welcome to the AI Diagnosis System",
+    "description": "This site allows you to enter your symptoms to get initial guidance, register or sign in to access the diagnosis.",
+    "startButton": "Start Diagnosis",
+    "howItWorks": "How does it work?",
+    "howItWorksText": "Our system uses artificial intelligence to analyze your symptoms and offer general guidance.",
+    "disclaimer": "Remember: it does not replace professional medical consultation."
+  },
+  "login": {
+    "title": "Sign In",
+    "username": "Username",
+    "password": "Password",
+    "usernamePlaceholder": "Your username",
+    "passwordPlaceholder": "Your password",
+    "submit": "Enter",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Register here"
+  },
+  "register": {
+    "title": "Sign Up",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Create account",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Sign in"
+  },
+  "dashboard": {
+    "title": "Preliminary AI Diagnosis",
+    "description": "Enter your symptoms to get a preliminary diagnosis.",
+    "searchPlaceholder": "Search for health tips or topics...",
+    "searchButton": "Search",
+    "symptomFormTitle": "Symptom Form",
+    "symptomPlaceholder": "Example: fever, dry cough, headache...",
+    "analyzeButton": "Analyze",
+    "educationalVideos": "Educational Videos",
+    "healthTips": "Health News and Tips",
+    "recentDiagnostics": "My Recent Diagnostics",
+    "noDiagnostics": "No diagnostics recorded yet."
+  },
+  "diagnostic": {
+    "preliminaryTitle": "Preliminary Diagnosis",
+    "severity": "Severity Level",
+    "recommendations": "Recommendations",
+    "whenToSeek": "When to see a doctor",
+    "estimatedProbability": "Estimated probability",
+    "aiPowered": "AI Analysis",
+    "basicAnalysis": "Basic Analysis"
+  },
+  "severity": {
+    "low": "Mild",
+    "moderate": "Moderate",
+    "urgent": "Urgent",
+    "lowDesc": "Minor symptoms. You can manage them at home.",
+    "moderateDesc": "Requires medical attention soon.",
+    "urgentDesc": "Seek immediate medical attention!"
+  },
+  "accessibility": {
+    "menu": "Accessibility",
+    "darkMode": "Dark mode",
+    "increaseText": "Increase text",
+    "decreaseText": "Decrease text",
+    "textToSpeech": "Text to speech",
+    "stopSpeech": "Stop reading",
+    "keyboardShortcuts": "Keyboard shortcuts",
+    "skipToContent": "Skip to main content"
+  },
+  "support": {
+    "title": "Support and Contact Center",
+    "faqTitle": "Frequently Asked Questions",
+    "faq1Q": "How does the diagnosis work?",
+    "faq1A": "The system analyzes your symptoms and generates suggestions based on common pattern matches.",
+    "faq2Q": "Is the diagnosis medical?",
+    "faq2A": "No. It is for guidance only. You should always confirm with a health professional.",
+    "contactTitle": "Contact Us",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "sendButton": "Send"
+  },
+  "healthTips": {
+    "hydration": "Stay hydrated: at least 2 liters of water daily.",
+    "sleep": "Good sleep strengthens your immune system.",
+    "nutrition": "Increase consumption of fresh fruits and vegetables.",
+    "exercise": "Do moderate physical activity for at least 30 minutes a day."
+  },
+  "footer": {
+    "copyright": "© 2025 AI Diagnosis | Academic project",
+    "support": "Support",
+    "privacy": "Privacy policy",
+    "about": "About the project"
+  },
+  "aria": {
+    "openMenu": "Open accessibility menu",
+    "closeMenu": "Close menu",
+    "searchInput": "Search field",
+    "symptomInput": "Enter your symptoms here",
+    "videoPlayer": "Educational video player"
+  }
+}
