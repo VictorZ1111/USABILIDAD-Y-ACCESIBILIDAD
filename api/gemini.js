@@ -1,5 +1,15 @@
 // API Serverless para proteger la clave de Gemini
 export default async function handler(req, res) {
+  // Configurar CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Manejar preflight request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // Solo permitir POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -7,6 +17,8 @@ export default async function handler(req, res) {
 
   try {
     const { prompt, tipo } = req.body;
+
+    console.log('🔍 Request recibido:', { tipo, promptLength: prompt?.length });
 
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt requerido' });
@@ -16,8 +28,11 @@ export default async function handler(req, res) {
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
     
     if (!GEMINI_API_KEY) {
+      console.error('❌ API key no encontrada en variables de entorno');
       return res.status(500).json({ error: 'API key no configurada en el servidor' });
     }
+
+    console.log('✅ API key encontrada');
 
     const modelo = 'gemini-2.5-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${GEMINI_API_KEY}`;
@@ -63,9 +78,11 @@ Incluye:
       })
     });
 
+    console.log('📡 Respuesta de Gemini status:', response.status);
+
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('Error de Gemini:', errorData);
+      console.error('❌ Error de Gemini:', errorData);
       return res.status(response.status).json({ 
         error: 'Error al conectar con Gemini AI',
         details: errorData 
@@ -78,13 +95,15 @@ Incluye:
     const respuesta = data.candidates?.[0]?.content?.parts?.[0]?.text || 
                       'No se pudo generar una respuesta';
 
+    console.log('✅ Respuesta generada exitosamente');
+
     return res.status(200).json({ 
       success: true, 
       respuesta: respuesta 
     });
 
   } catch (error) {
-    console.error('Error en API:', error);
+    console.error('❌ Error en API serverless:', error);
     return res.status(500).json({ 
       error: 'Error interno del servidor',
       message: error.message 
