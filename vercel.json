@@ -2,14 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.js",
+      "src": "api/gemini.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/api/gemini",
+      "dest": "/api/gemini.js"
     },
     {
       "handle": "filesystem"

@@ -1,0 +1,16 @@
+{
+  "name": "diagnostico-ia",
+  "version": "1.0.0",
+  "description": "Sistema de diagnóstico médico con IA usando Google Gemini",
+  "scripts": {
+    "start": "node api/gemini.js"
+  },
+  "keywords": [
+    "medical",
+    "ai",
+    "gemini",
+    "diagnosis"
+  ],
+  "author": "",
+  "license": "MIT"
+}
