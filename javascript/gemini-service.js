@@ -10,7 +10,7 @@ class GeminiService {
       // En local, usar API directamente (solo para pruebas)
       // ⚠️ IMPORTANTE: La API key está en IA-GEMINI.env (NO se sube a GitHub)
       this.apiKey = 'TU_API_KEY_AQUI_SOLO_LOCAL';
-      this.model = 'gemini-1.5-flash-latest';
+      this.model = 'gemini-1.5-flash';
       this.endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/';
     } else {
       // En producción, usar API serverless (protegida)
